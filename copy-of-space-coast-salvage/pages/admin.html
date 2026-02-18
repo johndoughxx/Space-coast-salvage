@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Space Coast Salvage</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   SPACE COAST SALVAGE — ADMIN PANEL
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --bg:#090C10;--s1:#0F1318;--s2:#161C24;--bd:#1A2233;--bd2:#253045;
+  --tx:#E2E8F0;--t2:#8494A7;--t3:#4A5B72;
+  --ac:#F97316;--ac2:#EA580C;--acs:rgba(249,115,22,.10);
+  --ok:#10B981;--oks:rgba(16,185,129,.10);
+  --no:#EF4444;--nos:rgba(239,68,68,.10);
+  --wn:#FBBF24;--wns:rgba(251,191,36,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px;line-height:1.5}
+.app{display:flex;min-height:100vh}
+
+/* Sidebar */
+.side{width:260px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.brand{padding:28px 24px 24px;border-bottom:1px solid var(--bd)}
+.brand-icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--ac),#FB923C);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:20px;font-weight:800;color:#fff}
+.brand h1{font-size:17px;font-weight:700;letter-spacing:-0.03em;line-height:1.2}
+.brand p{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-top:3px}
+.nav{padding:16px 0;flex:1}
+.nav-label{padding:6px 24px;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--t3);font-weight:700;margin-top:12px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:var(--t2);cursor:pointer;transition:all .15s;font-weight:500;font-size:13.5px;border-left:3px solid transparent}
+.nav-item:hover{background:var(--s2);color:var(--tx)}
+.nav-item.active{color:var(--ac);background:var(--acs);border-left-color:var(--ac)}
+.nav-badge{margin-left:auto;background:var(--bd);color:var(--t2);font-size:11px;padding:2px 9px;border-radius:10px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.demo-badge{margin:0 16px 20px;padding:14px;background:var(--wns);border-radius:12px;font-size:12px;color:var(--wn);line-height:1.5}
+.demo-badge strong{display:block;margin-bottom:2px}
+
+/* Main */
+.main{margin-left:260px;flex:1;padding:32px 40px;min-height:100vh}
+
+/* Page Header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.page-title{font-size:24px;font-weight:800;letter-spacing:-0.04em}
+.page-sub{color:var(--t2);font-size:13px;margin-top:2px}
+
+/* Stats Grid */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:22px;transition:border-color .2s}
+.stat:hover{border-color:var(--bd2)}
+.stat-label{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:8px}
+.stat-val{font-size:30px;font-weight:800;letter-spacing:-.04em;font-family:'JetBrains Mono',monospace}
+.stat-sub{font-size:12px;color:var(--t2);margin-top:4px}
+
+/* Toolbar */
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:9px 14px;flex:1;max-width:340px;transition:border-color .2s}
+.search-box:focus-within{border-color:var(--ac)}
+.search-box input{background:none;border:none;color:var(--tx);font-family:inherit;font-size:13px;outline:none;width:100%}
+.search-box input::placeholder{color:var(--t3)}
+.filter-btn{padding:8px 16px;border-radius:10px;border:1px solid var(--bd);background:var(--s1);color:var(--t2);font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s}
+.filter-btn:hover{border-color:var(--bd2);color:var(--tx)}
+.filter-btn.active{border-color:var(--ac);color:var(--ac);background:var(--acs)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:10px;border:none;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--ac);color:#fff}
+.btn-primary:hover{background:var(--ac2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.3)}
+.btn-ghost{background:transparent;color:var(--t2);padding:6px 10px}
+.btn-ghost:hover{color:var(--tx);background:var(--s2)}
+
+/* Table */
+.table-wrap{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.table-header{padding:14px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:700;color:var(--t2)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:13px 16px;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);font-weight:700;border-bottom:1px solid var(--bd);background:rgba(0,0,0,.2)}
+td{padding:14px 16px;border-bottom:1px solid var(--bd);font-size:13.5px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.012)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:7px;font-size:11.5px;font-weight:600}
+.badge-green{background:var(--oks);color:var(--ok)}
+.badge-gray{background:rgba(120,140,160,.1);color:var(--t2)}
+.actions{display:flex;gap:4px}
+
+/* Vehicle Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:all .2s}
+.card:hover{border-color:var(--bd2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.card-img{width:100%;height:200px;object-fit:cover;display:block;background:var(--s2)}
+.card-empty-img{width:100%;height:200px;display:flex;align-items:center;justify-content:center;background:var(--s2);color:var(--t3);flex-direction:column;gap:8px;font-size:12px}
+.card-body{padding:18px}
+.card-eyebrow{font-size:11px;color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.card-title{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.card-vin{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--t3);margin-bottom:10px}
+.card-desc{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--bd)}
+.photo-count{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:4px}
+
+/* View Toggle */
+.view-toggle{display:flex;background:var(--s1);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.view-toggle button{padding:8px 16px;border:none;background:none;color:var(--t2);font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s}
+.view-toggle button.active{background:var(--acs);color:var(--ac)}
+.view-toggle button:not(:last-child){border-right:1px solid var(--bd)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:100;animation:fadeIn .15s ease}
+.modal-overlay.hidden{display:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal{background:var(--s1);border:1px solid var(--bd);border-radius:18px;width:640px;max-height:90vh;overflow-y:auto;animation:slideUp .2s ease}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:22px 26px;border-bottom:1px solid var(--bd)}
+.modal-head h2{font-size:17px;font-weight:700;letter-spacing:-.02em}
+.modal-head button{padding:4px;cursor:pointer;background:none;border:none;color:var(--t2)}
+.modal-body{padding:26px}
+.modal-foot{padding:16px 26px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:10px}
+
+/* Form */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.form-input{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-family:inherit;font-size:13.5px;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--ac)}
+textarea.form-input{min-height:90px;resize:vertical;line-height:1.6}
+select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234A5B72' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+/* Toggle */
+.toggle-wrap{display:flex;align-items:center;gap:10px;cursor:pointer}
+.toggle{width:42px;height:24px;border-radius:12px;background:var(--bd);position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--ac)}
+.toggle::after{content:'';width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform .2s}
+.toggle.on::after{transform:translateX(18px)}
+.toggle-text{font-size:13px;color:var(--t2)}
+
+/* Upload Zone */
+.upload-zone{border:2px dashed var(--bd);border-radius:14px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg)}
+.upload-zone:hover,.upload-zone.dragging{border-color:var(--ac);background:var(--acs)}
+.upload-zone svg{color:var(--t3);margin-bottom:4px}
+.upload-text{font-size:13px;color:var(--t2);line-height:1.6;margin-top:8px}
+.upload-text strong{color:var(--ac)}
+.upload-hint{font-size:11px;color:var(--t3);margin-top:4px}
+
+/* Photo Gallery */
+.photo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+.photo-thumb{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:4/3;background:var(--s2);border:2px solid transparent;transition:border-color .2s}
+.photo-thumb:hover{border-color:var(--bd2)}
+.photo-thumb.primary{border-color:var(--ac)}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.photo-thumb:hover .photo-actions{opacity:1}
+.photo-btn{width:26px;height:26px;border-radius:6px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.photo-btn-star{background:rgba(249,115,22,.85);color:#fff}
+.photo-btn-star:hover{background:var(--ac)}
+.photo-btn-del{background:rgba(239,68,68,.85);color:#fff}
+.photo-btn-del:hover{background:var(--no)}
+.photo-main-badge{position:absolute;bottom:6px;left:6px;background:var(--ac);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.05em}
+
+/* Upload Progress */
+.upload-progress{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.upload-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--s2);border-radius:8px;font-size:12px}
+.upload-item-name{flex:1;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.upload-bar{flex:2;height:6px;background:var(--bd);border-radius:3px;overflow:hidden}
+.upload-bar-fill{height:100%;background:var(--ac);border-radius:3px;transition:width .3s ease}
+.upload-status{font-size:11px;font-weight:600;width:70px;text-align:right}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:200;animation:slideUp .2s ease;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.hidden{display:none}
+.toast-success{border-color:var(--ok)}
+.toast-error{border-color:var(--no)}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--t3)}
+.empty-state p{margin-top:8px;font-size:13px}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+.text-muted{color:var(--t2)}
+.text-dim{color:var(--t3)}
+.photo-info{margin-top:8px;font-size:11.5px;color:var(--t3)}
+
+/* Login Screen */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.login-box{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:40px;width:400px;text-align:center;animation:slideUp .3s ease}
+.login-box .brand-icon{margin:0 auto 16px}
+.login-box h1{font-size:20px;font-weight:700;margin-bottom:4px}
+.login-box p{color:var(--t2);font-size:13px;margin-bottom:28px}
+.login-box .form-group{text-align:left}
+.login-error{color:var(--no);font-size:12px;margin-top:8px}
+.login-box .btn-primary{width:100%;justify-content:center;padding:12px;margin-top:8px}
+
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.card-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<!-- ═══ Supabase JS SDK ═══ -->
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CONFIGURATION — Replace these with your actual Supabase credentials
+// ═══════════════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const BUCKET = 'vehicle-photos';
+
+const isDemo = SUPABASE_URL.includes('YOUR_PROJECT');
+
+// Initialize Supabase client — handle different SDK export formats
+let supabase;
+try {
+  if (window.supabase && window.supabase.createClient) {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } else if (window.Supabase && window.Supabase.createClient) {
+    supabase = window.Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } else {
+    // Fallback: create a lightweight REST client for demo mode
+    console.warn('Supabase SDK not loaded — running in demo mode');
+    supabase = {
+      from: (table) => ({
+        select: (cols) => ({ order: (col,opts) => ({ data: [], error: null }), eq: (k,v) => ({ data: [], error: null }) }),
+        insert: (data) => ({ select: () => ({ data: [data], error: null }) }),
+        update: (data) => ({ eq: (k,v) => ({ data: [data], error: null }) }),
+        delete: () => ({ eq: (k,v) => ({ data: null, error: null }) }),
+      }),
+      auth: {
+        getUser: async () => ({ data: { user: null } }),
+        signInWithPassword: async () => ({ error: { message: 'SDK not loaded. Check your internet connection and refresh.' } }),
+        signOut: async () => ({}),
+      },
+      storage: {
+        from: (bucket) => ({
+          upload: async () => ({ error: { message: 'SDK not loaded' } }),
+          getPublicUrl: (path) => ({ data: { publicUrl: '' } }),
+        }),
+      },
+    };
+  }
+} catch(e) {
+  console.error('Supabase init error:', e);
+}
+
+// ═══ State ═══
+let state = {
+  view: 'dashboard',
+  user: null,
+  vehicles: [],
+  pages: [],
+  search: '',
+  filter: 'all',
+  viewMode: 'cards',
+  modal: null,
+  toast: null,
+  loginEmail: '',
+  loginPass: '',
+  loginError: '',
+  uploads: [],
+};
+
+// Demo data
+const DEMO_VEHICLES = [
+  {id:"1",year:2015,make:"Ford",model:"F-150",vin:"1FTEW1EP5FFA12345",description:"Extended cab, 5.0L V8, RWD. Front-end damage, strong motor and trans. Good doors, bed, and tailgate.",image_url:"https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=260&fit=crop",images:[],visible:true,created_at:"2025-02-12T10:00:00Z"},
+  {id:"2",year:2012,make:"Toyota",model:"Camry",vin:"4T1BF1FK3CU512345",description:"SE trim, 2.5L 4cyl. Rear collision. Engine runs, clean interior. Good body panels.",image_url:"https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&h=260&fit=crop",images:[],visible:true,created_at:"2025-02-10T09:00:00Z"},
+  {id:"3",year:2018,make:"Chevrolet",model:"Silverado 1500",vin:"3GCUKSEC0JG234567",description:"Crew cab LT, 5.3L V8. Flood vehicle. Good engine, trans, and body parts.",image_url:"https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?w=400&h=260&fit=crop",images:[],visible:true,created_at:"2025-02-08T14:00:00Z"},
+  {id:"4",year:2009,make:"Honda",model:"Accord",vin:"1HGCP26889A012345",description:"EX-L, 2.4L VTEC. Side impact. Leather interior, sunroof intact.",image_url:"https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=260&fit=crop",images:[],visible:false,created_at:"2025-02-06T08:00:00Z"},
+  {id:"5",year:2020,make:"Nissan",model:"Altima",vin:"1N4BL4BV0LC123456",description:"S trim, 2.5L CVT. Front-end collision. Low mileage, good rear body and electronics.",image_url:"https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=260&fit=crop",images:[],visible:true,created_at:"2025-02-04T12:00:00Z"},
+  {id:"6",year:2014,make:"Jeep",model:"Grand Cherokee",vin:"1C4RJFBG5EC345678",description:"Laredo 4x4, 3.6L V6. Does not run. Great body, interior, and 4WD components.",image_url:"https://images.unsplash.com/photo-1568844293986-8d0400f4745b?w=400&h=260&fit=crop",images:[],visible:true,created_at:"2025-02-02T16:00:00Z"},
+];
+const DEMO_PAGES = [
+  {id:"1",slug:"about",title:"About Us",body:"Space Coast Salvage is Brevard County's premier auto salvage yard.",meta_description:"About SCS",published:true,created_at:"2025-01-15T10:00:00Z",updated_at:"2025-02-10T15:30:00Z"},
+  {id:"2",slug:"sell-your-car",title:"Sell Your Junk Car",body:"Get top dollar for your junk car. Free towing, same-day pickup throughout Brevard County.",meta_description:"Sell your junk car",published:true,created_at:"2025-01-15T10:00:00Z",updated_at:"2025-02-08T11:00:00Z"},
+  {id:"3",slug:"how-it-works",title:"How Self-Pull Works",body:"Bring your own tools and pull the parts you need at a fraction of retail prices.",meta_description:"Self-service auto parts",published:false,created_at:"2025-02-14T14:00:00Z",updated_at:"2025-02-14T14:00:00Z"},
+];
+
+const MAKES = ["Acura","Audi","BMW","Buick","Cadillac","Chevrolet","Chrysler","Dodge","Ford","GMC","Honda","Hyundai","Infiniti","Jeep","Kia","Lexus","Lincoln","Mazda","Mercedes-Benz","Mitsubishi","Nissan","Ram","Subaru","Tesla","Toyota","Volkswagen","Volvo","Other"];
+const YEARS = Array.from({length:36},(_,i)=>2026-i);
+
+// ═══ SVG Icons ═══
+const icons = {
+  car:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/><path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/><path d="M5 17H3v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0H9"/><path d="M10 6l1 5h-6"/></svg>',
+  page:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  dash:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  plus:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  edit:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+  trash:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  x:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  search:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  eye:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  eyeOff:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
+  img:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+  upload:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+  camera:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+  star:'<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  check:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
+};
+
+// ═══ Helpers ═══
+function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+function getImg(v) { return v.image_url || (v.images && v.images[0]) || ''; }
+function photoCt(v) { const i = v.images||[]; return i.length + (v.image_url && !i.includes(v.image_url) ? 1 : 0); }
+
+function showToast(msg, type='success') {
+  state.toast = {msg, type};
+  render();
+  setTimeout(()=>{ state.toast=null; render(); }, 3000);
+}
+
+// ═══ Data Operations ═══
+async function loadData() {
+  if (isDemo) { state.vehicles=[...DEMO_VEHICLES]; state.pages=[...DEMO_PAGES]; return; }
+  try {
+    const vRes = await supabase.from('vehicles').select('*').order('created_at',{ascending:false});
+    const pRes = await supabase.from('pages').select('*').order('created_at',{ascending:false});
+    if (vRes.data) state.vehicles = vRes.data;
+    if (pRes.data) state.pages = pRes.data;
+  } catch(e) { console.error('Load error:', e); showToast('Failed to load data','error'); }
+}
+
+async function saveItem(table, item) {
+  const {_new, id, ...data} = item;
+  try {
+    if (isDemo) {
+      const ts = new Date().toISOString();
+      if (_new) {
+        const ni = {...data, id:Date.now().toString(), created_at:ts, updated_at:ts};
+        if (table==='vehicles') state.vehicles.unshift(ni);
+        else state.pages.unshift(ni);
+      } else {
+        const arr = table==='vehicles' ? state.vehicles : state.pages;
+        const idx = arr.findIndex(x=>x.id===id);
+        if (idx>=0) arr[idx] = {...data, id, updated_at:ts};
+      }
+    } else {
+      if (_new) {
+        const res = await supabase.from(table).insert(data).select();
+        if (res.data && res.data[0]) { if(table==='vehicles') state.vehicles.unshift(res.data[0]); else state.pages.unshift(res.data[0]); }
+      } else {
+        await supabase.from(table).update({...data, updated_at:new Date().toISOString()}).eq('id',id);
+        const arr = table==='vehicles' ? state.vehicles : state.pages;
+        const idx = arr.findIndex(x=>x.id===id);
+        if (idx>=0) Object.assign(arr[idx], data);
+      }
+    }
+    showToast(_new ? 'Added successfully!' : 'Saved successfully!');
+  } catch(e) { showToast('Failed to save','error'); }
+  state.modal = null;
+  render();
+}
+
+async function deleteItem(table, id) {
+  if (!confirm('Are you sure you want to delete this?')) return;
+  try {
+    if (!isDemo) await supabase.from(table).delete().eq('id',id);
+    if (table==='vehicles') state.vehicles = state.vehicles.filter(x=>x.id!==id);
+    else state.pages = state.pages.filter(x=>x.id!==id);
+    showToast('Deleted!');
+  } catch(e) { showToast('Failed to delete','error'); }
+  render();
+}
+
+async function uploadPhoto(file) {
+  const ext = file.name.split('.').pop();
+  const path = `vehicles/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const {error} = await supabase.storage.from(BUCKET).upload(path, file, {upsert:true, contentType:file.type});
+  if (error) throw error;
+  const {data} = supabase.storage.from(BUCKET).getPublicUrl(path);
+  return data.publicUrl;
+}
+
+// ═══ Auth ═══
+async function checkAuth() {
+  if (isDemo) { state.user = {email:'demo@spacecoastsalvage.com'}; return; }
+  const {data:{user}} = await supabase.auth.getUser();
+  state.user = user;
+}
+
+async function login() {
+  state.loginError = '';
+  const {error} = await supabase.auth.signInWithPassword({email:state.loginEmail, password:state.loginPass});
+  if (error) { state.loginError = error.message; render(); return; }
+  await checkAuth();
+  await loadData();
+  render();
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  state.user = null;
+  render();
+}
+
+// ═══ File Upload Handler ═══
+async function handleFileUpload(files) {
+  const valid = Array.from(files).filter(f => f.type.startsWith('image/') && f.size < 10*1024*1024);
+  if (!valid.length) return;
+
+  const m = state.modal;
+  if (!m) return;
+
+  if (isDemo) {
+    const urls = valid.map(f => URL.createObjectURL(f));
+    m.images = [...(m.images||[]), ...urls];
+    if (!m.image_url) m.image_url = urls[0];
+    render();
+    return;
+  }
+
+  for (const file of valid) {
+    state.uploads.push({name:file.name, progress:0, status:'uploading'});
+    render();
+    try {
+      const idx = state.uploads.findIndex(u=>u.name===file.name);
+      state.uploads[idx].progress = 40;
+      render();
+      const url = await uploadPhoto(file);
+      state.uploads[idx].progress = 100;
+      state.uploads[idx].status = 'done';
+      m.images = [...(m.images||[]), url];
+      if (!m.image_url) m.image_url = url;
+      render();
+    } catch(e) {
+      const idx = state.uploads.findIndex(u=>u.name===file.name);
+      if (idx>=0) state.uploads[idx].status = 'error';
+      render();
+    }
+  }
+  setTimeout(()=>{ state.uploads = state.uploads.filter(u=>u.status!=='done'); render(); }, 2000);
+}
+
+// ═══ RENDER ═══
+function render() {
+  const app = document.getElementById('app');
+  if (!state.user && !isDemo) { app.innerHTML = renderLogin(); return; }
+  app.innerHTML = `
+    <div class="app">
+      ${renderSidebar()}
+      <main class="main">
+        ${state.view==='dashboard' ? renderDashboard() : state.view==='vehicles' ? renderVehicles() : renderPages()}
+      </main>
+      ${state.modal ? renderModal() : ''}
+      ${state.toast ? `<div class="toast toast-${state.toast.type==='success'?'success':'error'}">${state.toast.type==='success'?icons.check:''} ${esc(state.toast.msg)}</div>` : ''}
+    </div>`;
+  bindEvents();
+}
+
+function renderLogin() {
+  return `<div class="login-screen">
+    <div class="login-box">
+      <div class="brand-icon">SCS</div>
+      <h1>Space Coast Salvage</h1>
+      <p>Sign in to access the admin panel</p>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="login-email" value="${esc(state.loginEmail)}" placeholder="admin@spacecoastsalvage.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="login-pass" value="" placeholder="Your password">
+      </div>
+      ${state.loginError ? `<div class="login-error">${esc(state.loginError)}</div>` : ''}
+      <button class="btn btn-primary" id="login-btn">${icons.check} Sign In</button>
+    </div>
+  </div>`;
+}
+
+function renderSidebar() {
+  const v = state.vehicles, p = state.pages;
+  return `<nav class="side">
+    <div class="brand"><div class="brand-icon">SCS</div><h1>Space Coast Salvage</h1><p>Admin Panel</p></div>
+    <div class="nav">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item ${state.view==='dashboard'?'active':''}" data-view="dashboard">${icons.dash} Dashboard</div>
+      <div class="nav-label" style="margin-top:20px">Manage</div>
+      <div class="nav-item ${state.view==='vehicles'?'active':''}" data-view="vehicles">${icons.car} Vehicles <span class="nav-badge">${v.length}</span></div>
+      <div class="nav-item ${state.view==='pages'?'active':''}" data-view="pages">${icons.page} Pages <span class="nav-badge">${p.length}</span></div>
+    </div>
+    ${isDemo ? '<div class="demo-badge"><strong>Demo Mode</strong>Connect Supabase to upload photos and manage live data.</div>' : `<div style="margin:0 16px 20px;padding:14px;background:var(--s2);border-radius:12px;font-size:12px;color:var(--t2);line-height:1.5;cursor:pointer" id="logout-btn">Sign out (${esc(state.user?.email||'')})</div>`}
+  </nav>`;
+}
+
+function renderDashboard() {
+  const v=state.vehicles, p=state.pages;
+  const vis=v.filter(x=>x.visible).length, hid=v.length-vis;
+  const pics=v.reduce((s,x)=>s+(x.images?.length||0)+(x.image_url?1:0),0);
+  const mk={}; v.forEach(x=>{mk[x.make]=(mk[x.make]||0)+1});
+  const top=Object.entries(mk).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  return `
+    <div class="page-header"><div><div class="page-title">Dashboard</div><div class="page-sub">Space Coast Salvage — Inventory Overview</div></div></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Total Vehicles</div><div class="stat-val">${v.length}</div><div class="stat-sub">${vis} visible on site</div></div>
+      <div class="stat"><div class="stat-label">Hidden</div><div class="stat-val" style="color:${hid>0?'var(--wn)':'var(--ok)'}">${hid}</div><div class="stat-sub">${hid>0?'not shown':'all visible'}</div></div>
+      <div class="stat"><div class="stat-label">Photos</div><div class="stat-val">${pics}</div><div class="stat-sub">across all vehicles</div></div>
+      <div class="stat"><div class="stat-label">Pages</div><div class="stat-val">${p.length}</div><div class="stat-sub">${p.filter(x=>x.published).length} published</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="table-wrap"><div class="table-header">Recent Vehicles</div><table><tbody>${v.slice(0,6).map(x=>`<tr><td style="font-weight:600">${x.year} ${esc(x.make)} ${esc(x.model)}</td><td><span class="badge ${x.visible?'badge-green':'badge-gray'}">${x.visible?'Visible':'Hidden'}</span></td></tr>`).join('')}</tbody></table></div>
+      <div class="table-wrap"><div class="table-header">Vehicles by Make</div><table><tbody>${top.map(([m,c])=>`<tr><td style="font-weight:600">${esc(m)}</td><td class="mono" style="color:var(--ac)">${c}</td></tr>`).join('')}${!top.length?'<tr><td class="empty-state"><p>No vehicles yet</p></td></tr>':''}</tbody></table></div>
+    </div>`;
+}
+
+function renderVehicles() {
+  const s=state.search.toLowerCase();
+  const f=state.vehicles.filter(v=>{
+    const match=`${v.year} ${v.make} ${v.model} ${v.vin} ${v.description}`.toLowerCase().includes(s);
+    return match&&(state.filter==='all'||(state.filter==='visible'&&v.visible)||(state.filter==='hidden'&&!v.visible));
+  });
+  const filters=['all','visible','hidden'];
+  return `
+    <div class="page-header"><div><div class="page-title">Vehicle Inventory</div><div class="page-sub">Manage vehicles in the yard</div></div>
+      <button class="btn btn-primary" id="add-vehicle">${icons.plus} Add Vehicle</button></div>
+    <div class="toolbar">
+      <div class="search-box">${icons.search}<input placeholder="Search year, make, model, VIN..." value="${esc(state.search)}" id="search-input"></div>
+      ${filters.map(x=>`<button class="filter-btn ${state.filter===x?'active':''}" data-filter="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}
+      <div style="margin-left:auto"><div class="view-toggle"><button class="${state.viewMode==='cards'?'active':''}" data-vm="cards">Cards</button><button class="${state.viewMode==='table'?'active':''}" data-vm="table">Table</button></div></div>
+    </div>
+    ${f.length===0 ? `<div class="table-wrap"><div class="empty-state">${icons.car}<p>No vehicles found</p></div></div>` :
+      state.viewMode==='cards' ? `<div class="card-grid">${f.map(v=>{
+        const img=getImg(v), ct=photoCt(v);
+        return `<div class="card">
+          ${img?`<img class="card-img" src="${esc(img)}" alt="${v.year} ${esc(v.make)} ${esc(v.model)}">`:`<div class="card-empty-img">${icons.img}<span>No photos</span></div>`}
+          <div class="card-body">
+            <div class="card-eyebrow">${v.year} · ${esc(v.make)}</div>
+            <div class="card-title">${esc(v.make)} ${esc(v.model)}</div>
+            <div class="card-vin">VIN: ${esc(v.vin)||'N/A'}</div>
+            <div class="card-desc">${esc(v.description)||'No description'}</div>
+            <div class="card-footer">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span class="badge ${v.visible?'badge-green':'badge-gray'}">${v.visible?icons.eye+' Visible':icons.eyeOff+' Hidden'}</span>
+                ${ct>0?`<span class="photo-count">${icons.camera} ${ct}</span>`:''}
+              </div>
+              <div class="actions">
+                <button class="btn btn-ghost" data-edit-v="${v.id}">${icons.edit}</button>
+                <button class="btn btn-ghost" style="color:var(--no)" data-del-v="${v.id}">${icons.trash}</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}</div>`
+      : `<div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>VIN</th><th>Photos</th><th>Status</th><th></th></tr></thead><tbody>${f.map(v=>{
+        const img=getImg(v);
+        return `<tr>
+          <td><div style="display:flex;align-items:center;gap:12px">${img?`<img src="${esc(img)}" style="width:56px;height:40px;border-radius:8px;object-fit:cover">`:`<div style="width:56px;height:40px;border-radius:8px;background:var(--s2);display:flex;align-items:center;justify-content:center">${icons.img}</div>`}<div><div style="font-weight:600">${v.year} ${esc(v.make)} ${esc(v.model)}</div><div style="font-size:12px;color:var(--t3)">${esc((v.description||'').slice(0,50))}</div></div></div></td>
+          <td class="mono text-muted">${esc(v.vin)||'—'}</td>
+          <td><span class="photo-count">${icons.camera} ${photoCt(v)}</span></td>
+          <td><span class="badge ${v.visible?'badge-green':'badge-gray'}">${v.visible?'Visible':'Hidden'}</span></td>
+          <td><div class="actions"><button class="btn btn-ghost" data-edit-v="${v.id}">${icons.edit}</button><button class="btn btn-ghost" style="color:var(--no)" data-del-v="${v.id}">${icons.trash}</button></div></td>
+        </tr>`;
+      }).join('')}</tbody></table></div>`}`;
+}
+
+function renderPages() {
+  const s=state.search.toLowerCase();
+  const f=state.pages.filter(p=>{
+    const match=`${p.title} ${p.slug}`.toLowerCase().includes(s);
+    return match&&(state.filter==='all'||(state.filter==='published'&&p.published)||(state.filter==='drafts'&&!p.published));
+  });
+  return `
+    <div class="page-header"><div><div class="page-title">Website Pages</div><div class="page-sub">Manage your site content</div></div>
+      <button class="btn btn-primary" id="add-page">${icons.plus} New Page</button></div>
+    <div class="toolbar">
+      <div class="search-box">${icons.search}<input placeholder="Search pages..." value="${esc(state.search)}" id="search-input"></div>
+      ${['all','published','drafts'].map(x=>`<button class="filter-btn ${state.filter===x?'active':''}" data-filter="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}
+    </div>
+    <div class="table-wrap">${f.length===0?`<div class="empty-state">${icons.page}<p>No pages found</p></div>`:
+      `<table><thead><tr><th>Title</th><th>Slug</th><th>Status</th><th>Updated</th><th></th></tr></thead><tbody>${f.map(p=>`<tr>
+        <td style="font-weight:600">${esc(p.title)}</td>
+        <td class="mono text-muted">/${esc(p.slug)}</td>
+        <td><span class="badge ${p.published?'badge-green':'badge-gray'}">${p.published?'Published':'Draft'}</span></td>
+        <td class="text-muted" style="font-size:12.5px">${new Date(p.updated_at||p.created_at).toLocaleDateString()}</td>
+        <td><div class="actions"><button class="btn btn-ghost" data-edit-p="${p.id}">${icons.edit}</button><button class="btn btn-ghost" style="color:var(--no)" data-del-p="${p.id}">${icons.trash}</button></div></td>
+      </tr>`).join('')}</tbody></table>`}</div>`;
+}
+
+function renderModal() {
+  const m = state.modal;
+  if (!m) return '';
+  const isVehicle = m._type === 'vehicle';
+  const title = m._new ? (isVehicle ? 'Add Vehicle' : 'New Page') : (isVehicle ? `Edit ${m.year} ${esc(m.make)} ${esc(m.model)}` : 'Edit Page');
+  const allImgs = [...new Set([...(m.image_url&&!(m.images||[]).includes(m.image_url)?[m.image_url]:[]),...(m.images||[])])].filter(Boolean);
+
+  let body = '';
+  if (isVehicle) {
+    body = `
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Year</label><select class="form-input" id="m-year">${YEARS.map(y=>`<option value="${y}" ${m.year==y?'selected':''}>${y}</option>`).join('')}</select></div>
+        <div class="form-group"><label class="form-label">Make</label><select class="form-input" id="m-make"><option value="">Select Make</option>${MAKES.map(x=>`<option value="${x}" ${m.make===x?'selected':''}>${x}</option>`).join('')}</select></div>
+        <div class="form-group"><label class="form-label">Model</label><input class="form-input" id="m-model" value="${esc(m.model)}" placeholder="e.g. F-150, Camry"></div>
+      </div>
+      <div class="form-group"><label class="form-label">VIN Number</label><input class="form-input mono" id="m-vin" value="${esc(m.vin)}" placeholder="17-character VIN" maxlength="17" style="letter-spacing:.05em;text-transform:uppercase"></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="m-desc" placeholder="Trim, engine, damage type, available parts...">${esc(m.description)}</textarea></div>
+      <div class="form-group">
+        <label class="form-label">Vehicle Photos</label>
+        <div class="upload-zone" id="upload-zone">${icons.upload}<div class="upload-text"><strong>Click to upload</strong> or drag and drop photos here</div><div class="upload-hint">JPG, PNG, or WebP · Max 10MB · Multiple files</div></div>
+        <input type="file" id="file-input" multiple accept="image/jpeg,image/png,image/webp" style="display:none">
+        ${state.uploads.length ? `<div class="upload-progress">${state.uploads.map(u=>`<div class="upload-item"><span class="upload-item-name">${esc(u.name)}</span><div class="upload-bar"><div class="upload-bar-fill" style="width:${u.progress}%"></div></div><span class="upload-status" style="color:var(${u.status==='done'?'--ok':u.status==='error'?'--no':'--ac'})">${u.status==='done'?'Done!':u.status==='error'?'Failed':'Uploading...'}</span></div>`).join('')}</div>`:''}
+        ${allImgs.length ? `<div class="photo-gallery">${allImgs.map((url,i)=>`<div class="photo-thumb ${url===m.image_url?'primary':''}">
+          <img src="${esc(url)}" alt="Photo ${i+1}">
+          ${url===m.image_url?'<div class="photo-main-badge">Main</div>':''}
+          <div class="photo-actions">
+            ${url!==m.image_url?`<button class="photo-btn photo-btn-star" data-set-main="${i}" title="Set as main">${icons.star}</button>`:''}
+            <button class="photo-btn photo-btn-del" data-rm-photo="${i}" title="Remove">${icons.trash}</button>
+          </div>
+        </div>`).join('')}</div><div class="photo-info">${allImgs.length} photo${allImgs.length!==1?'s':''} · Hover and click ★ to set the main website image</div>`:''}
+      </div>
+      <div class="toggle-wrap" id="m-toggle"><div class="toggle ${m.visible?'on':''}"></div><span class="toggle-text">${m.visible?'Visible — shown on your website':'Hidden — not shown on website'}</span></div>`;
+  } else {
+    body = `
+      <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="m-title" value="${esc(m.title)}" placeholder="Page Title"></div>
+      <div class="form-group"><label class="form-label">Slug</label><input class="form-input mono" id="m-slug" value="${esc(m.slug)}" placeholder="page-slug"></div>
+      <div class="form-group"><label class="form-label">Content</label><textarea class="form-input" id="m-body" placeholder="Page content..." style="min-height:140px">${esc(m.body)}</textarea></div>
+      <div class="form-group"><label class="form-label">Meta Description</label><input class="form-input" id="m-meta" value="${esc(m.meta_description)}" placeholder="SEO description"></div>
+      <div class="toggle-wrap" id="m-toggle"><div class="toggle ${m.published?'on':''}"></div><span class="toggle-text">${m.published?'Published — live on website':'Draft — not visible on website'}</span></div>`;
+  }
+
+  return `<div class="modal-overlay" id="modal-overlay">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-head"><h2>${title}</h2><button onclick="state.modal=null;render()">${icons.x}</button></div>
+      <div class="modal-body">${body}</div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="state.modal=null;render()">Cancel</button>
+        <button class="btn btn-primary" id="save-btn">${m._new?`${icons.plus} ${isVehicle?'Add Vehicle':'Create Page'}`:`${icons.check} Save Changes`}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══ Event Binding ═══
+function bindEvents() {
+  // Nav
+  document.querySelectorAll('[data-view]').forEach(el=>el.onclick=()=>{state.view=el.dataset.view;state.search='';state.filter='all';render()});
+
+  // Login
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) {
+    loginBtn.onclick = login;
+    document.getElementById('login-email').onchange = e=>{state.loginEmail=e.target.value};
+    document.getElementById('login-pass').onchange = e=>{state.loginPass=e.target.value};
+    document.getElementById('login-pass').onkeydown = e=>{if(e.key==='Enter')login()};
+  }
+
+  // Logout
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) logoutBtn.onclick = logout;
+
+  // Search
+  const si = document.getElementById('search-input');
+  if (si) si.oninput = e=>{state.search=e.target.value;render()};
+
+  // Filters
+  document.querySelectorAll('[data-filter]').forEach(el=>el.onclick=()=>{state.filter=el.dataset.filter;render()});
+
+  // View mode
+  document.querySelectorAll('[data-vm]').forEach(el=>el.onclick=()=>{state.viewMode=el.dataset.vm;render()});
+
+  // Add buttons
+  const av = document.getElementById('add-vehicle');
+  if (av) av.onclick=()=>{state.modal={_new:true,_type:'vehicle',year:2024,make:'',model:'',vin:'',description:'',image_url:'',images:[],visible:false};render()};
+  const ap = document.getElementById('add-page');
+  if (ap) ap.onclick=()=>{state.modal={_new:true,_type:'page',slug:'',title:'',body:'',meta_description:'',published:false};render()};
+
+  // Edit/Delete vehicles
+  document.querySelectorAll('[data-edit-v]').forEach(el=>el.onclick=()=>{
+    const v=state.vehicles.find(x=>x.id===el.dataset.editV);
+    if(v) {state.modal={...v,_type:'vehicle',images:v.images||[]};render()}
+  });
+  document.querySelectorAll('[data-del-v]').forEach(el=>el.onclick=()=>deleteItem('vehicles',el.dataset.delV));
+
+  // Edit/Delete pages
+  document.querySelectorAll('[data-edit-p]').forEach(el=>el.onclick=()=>{
+    const p=state.pages.find(x=>x.id===el.dataset.editP);
+    if(p) {state.modal={...p,_type:'page'};render()}
+  });
+  document.querySelectorAll('[data-del-p]').forEach(el=>el.onclick=()=>deleteItem('pages',el.dataset.delP));
+
+  // Modal overlay close
+  const mo = document.getElementById('modal-overlay');
+  if (mo) mo.onclick=()=>{state.modal=null;render()};
+
+  // Toggle
+  const tg = document.getElementById('m-toggle');
+  if (tg) tg.onclick=()=>{
+    if(state.modal._type==='vehicle') state.modal.visible=!state.modal.visible;
+    else state.modal.published=!state.modal.published;
+    render();
+  };
+
+  // Save
+  const sb2 = document.getElementById('save-btn');
+  if (sb2) sb2.onclick=()=>{
+    const m=state.modal;
+    if(m._type==='vehicle'){
+      m.year=parseInt(document.getElementById('m-year').value);
+      m.make=document.getElementById('m-make').value;
+      m.model=document.getElementById('m-model').value;
+      m.vin=document.getElementById('m-vin').value.toUpperCase();
+      m.description=document.getElementById('m-desc').value;
+      saveItem('vehicles',m);
+    } else {
+      m.title=document.getElementById('m-title').value;
+      m.slug=document.getElementById('m-slug').value;
+      m.body=document.getElementById('m-body').value;
+      m.meta_description=document.getElementById('m-meta').value;
+      saveItem('pages',m);
+    }
+  };
+
+  // Upload zone
+  const uz = document.getElementById('upload-zone');
+  const fi = document.getElementById('file-input');
+  if (uz && fi) {
+    uz.onclick=()=>fi.click();
+    uz.ondragover=e=>{e.preventDefault();uz.classList.add('dragging')};
+    uz.ondragleave=()=>uz.classList.remove('dragging');
+    uz.ondrop=e=>{e.preventDefault();uz.classList.remove('dragging');handleFileUpload(e.dataTransfer.files)};
+    fi.onchange=e=>{handleFileUpload(e.target.files);fi.value=''};
+  }
+
+  // Photo actions
+  const allImgs=[...new Set([...(state.modal?.image_url&&!(state.modal?.images||[]).includes(state.modal?.image_url)?[state.modal.image_url]:[]),...(state.modal?.images||[])])].filter(Boolean);
+  document.querySelectorAll('[data-set-main]').forEach(el=>el.onclick=e=>{
+    e.stopPropagation();
+    state.modal.image_url=allImgs[parseInt(el.dataset.setMain)];render();
+  });
+  document.querySelectorAll('[data-rm-photo]').forEach(el=>el.onclick=e=>{
+    e.stopPropagation();
+    const url=allImgs[parseInt(el.dataset.rmPhoto)];
+    state.modal.images=(state.modal.images||[]).filter(x=>x!==url);
+    if(state.modal.image_url===url) state.modal.image_url=state.modal.images[0]||'';
+    render();
+  });
+}
+
+// ═══ INIT ═══
+(async function init() {
+  await checkAuth();
+  await loadData();
+  render();
+})();
+</script>
+</body>
+</html>
